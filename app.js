@@ -1,5 +1,30 @@
-const API_KEY = '102d1da5215c19790de6469a5fc2c134';
-const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+const GEOCODE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
+const WEATHER_URL = 'https://api.open-meteo.com/v1/forecast';
+
+// Weather code to description & icon mapping
+const WEATHER_CODES = {
+    0: { desc: 'Clear sky', icon: '☀️' },
+    1: { desc: 'Mainly clear', icon: '🌤️' },
+    2: { desc: 'Partly cloudy', icon: '⛅' },
+    3: { desc: 'Overcast', icon: '☁️' },
+    45: { desc: 'Foggy', icon: '🌫️' },
+    48: { desc: 'Freezing fog', icon: '🌫️' },
+    51: { desc: 'Light drizzle', icon: '🌦️' },
+    53: { desc: 'Moderate drizzle', icon: '🌦️' },
+    55: { desc: 'Dense drizzle', icon: '🌧️' },
+    61: { desc: 'Slight rain', icon: '🌧️' },
+    63: { desc: 'Moderate rain', icon: '🌧️' },
+    65: { desc: 'Heavy rain', icon: '🌧️' },
+    71: { desc: 'Slight snow', icon: '🌨️' },
+    73: { desc: 'Moderate snow', icon: '🌨️' },
+    75: { desc: 'Heavy snow', icon: '❄️' },
+    80: { desc: 'Slight showers', icon: '🌦️' },
+    81: { desc: 'Moderate showers', icon: '🌧️' },
+    82: { desc: 'Violent showers', icon: '🌧️' },
+    95: { desc: 'Thunderstorm', icon: '⛈️' },
+    96: { desc: 'Thunderstorm with hail', icon: '⛈️' },
+    99: { desc: 'Thunderstorm with heavy hail', icon: '⛈️' },
+};
 
 // DOM elements
 const cityInput = document.getElementById('city-input');
@@ -15,7 +40,7 @@ cityInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') searchCity();
 });
 
-function searchCity() {
+async function searchCity() {
     const city = cityInput.value.trim();
     if (!city) return;
 
@@ -24,103 +49,78 @@ function searchCity() {
     currentWeatherSection.classList.add('hidden');
     forecastSection.classList.add('hidden');
 
-    Promise.all([
-        fetchCurrentWeather(city),
-        fetchForecast(city)
-    ])
-    .then(([currentData, forecastData]) => {
-        renderCurrentWeather(currentData);
-        renderForecast(forecastData);
+    try {
+        const location = await geocodeCity(city);
+        const weather = await fetchWeather(location.latitude, location.longitude);
+        renderCurrentWeather(weather, location);
+        renderForecast(weather);
         hideLoading();
-    })
-    .catch((err) => {
+    } catch (err) {
         hideLoading();
         showError(err.message);
-    });
+    }
 }
 
-async function fetchCurrentWeather(city) {
-    const url = `${BASE_URL}/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
+async function geocodeCity(city) {
+    const url = `${GEOCODE_URL}?name=${encodeURIComponent(city)}&count=1&language=en`;
     const res = await fetch(url);
-    if (!res.ok) {
-        if (res.status === 404) throw new Error(`City "${city}" not found. Please check the name and try again.`);
-        if (res.status === 401) throw new Error('Invalid API key. Please check your API key in app.js.');
-        throw new Error('Failed to fetch weather data. Please try again later.');
+    if (!res.ok) throw new Error('Failed to search for city. Please try again.');
+    const data = await res.json();
+    if (!data.results || data.results.length === 0) {
+        throw new Error(`City "${city}" not found. Please check the name and try again.`);
     }
+    return data.results[0];
+}
+
+async function fetchWeather(lat, lon) {
+    const url = `${WEATHER_URL}?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=6`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to fetch weather data. Please try again.');
     return res.json();
 }
 
-async function fetchForecast(city) {
-    const url = `${BASE_URL}/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
-    const res = await fetch(url);
-    if (!res.ok) {
-        if (res.status === 404) throw new Error(`City "${city}" not found.`);
-        if (res.status === 401) throw new Error('Invalid API key.');
-        throw new Error('Failed to fetch forecast data.');
-    }
-    return res.json();
+function getWeatherInfo(code) {
+    return WEATHER_CODES[code] || { desc: 'Unknown', icon: '🌡️' };
 }
 
-function renderCurrentWeather(data) {
-    document.getElementById('city-name').textContent = `${data.name}, ${data.sys.country}`;
-    document.getElementById('temperature').textContent = `${Math.round(data.main.temp)}°C`;
-    document.getElementById('description').textContent = data.weather[0].description;
-    document.getElementById('weather-icon').src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
-    document.getElementById('weather-icon').alt = data.weather[0].description;
-    document.getElementById('humidity').textContent = `${data.main.humidity}%`;
-    document.getElementById('wind').textContent = `${data.wind.speed} m/s`;
-    document.getElementById('feels-like').textContent = `${Math.round(data.main.feels_like)}°C`;
+function renderCurrentWeather(data, location) {
+    const current = data.current;
+    const weather = getWeatherInfo(current.weather_code);
+
+    document.getElementById('city-name').textContent = `${location.name}, ${location.country}`;
+    document.getElementById('temperature').textContent = `${Math.round(current.temperature_2m)}°C`;
+    document.getElementById('description').textContent = weather.desc;
+    document.getElementById('weather-icon').textContent = weather.icon;
+    document.getElementById('humidity').textContent = `${current.relative_humidity_2m}%`;
+    document.getElementById('wind').textContent = `${current.wind_speed_10m} km/h`;
+    document.getElementById('feels-like').textContent = `${Math.round(current.apparent_temperature)}°C`;
     currentWeatherSection.classList.remove('hidden');
 }
 
 function renderForecast(data) {
-    // Filter to one entry per day (noon readings)
-    const dailyForecasts = getDailyForecasts(data.list);
     const forecastGrid = document.getElementById('forecast-grid');
     forecastGrid.innerHTML = '';
 
-    dailyForecasts.forEach((day) => {
-        const card = document.createElement('div');
-        card.className = 'forecast-card';
-
-        const date = new Date(day.entries[0].dt * 1000);
+    // Skip today (index 0), show next 5 days
+    for (let i = 1; i <= 5; i++) {
+        const date = new Date(data.daily.time[i]);
+        const weather = getWeatherInfo(data.daily.weather_code[i]);
         const dayName = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 
+        const card = document.createElement('div');
+        card.className = 'forecast-card';
         card.innerHTML = `
             <div class="day">${dayName}</div>
-            <img src="https://openweathermap.org/img/wn/${day.entries[0].weather[0].icon}@2x.png"
-                 alt="${day.entries[0].weather[0].description}" width="50" height="50">
+            <div class="weather-emoji">${weather.icon}</div>
             <div class="temp-range">
-                ${Math.round(day.high)}° <span class="low">${Math.round(day.low)}°</span>
+                ${Math.round(data.daily.temperature_2m_max[i])}° <span class="low">${Math.round(data.daily.temperature_2m_min[i])}°</span>
             </div>
-            <div class="forecast-desc">${day.entries[0].weather[0].description}</div>
+            <div class="forecast-desc">${weather.desc}</div>
         `;
         forecastGrid.appendChild(card);
-    });
+    }
 
     forecastSection.classList.remove('hidden');
-}
-
-function getDailyForecasts(list) {
-    const days = {};
-    const today = new Date().toDateString();
-
-    list.forEach((item) => {
-        const date = new Date(item.dt * 1000);
-        const dateStr = date.toDateString();
-
-        // Skip today
-        if (dateStr === today) return;
-
-        if (!days[dateStr]) {
-            days[dateStr] = { entries: [], high: -Infinity, low: Infinity };
-        }
-        days[dateStr].entries.push(item);
-        days[dateStr].high = Math.max(days[dateStr].high, item.main.temp_max);
-        days[dateStr].low = Math.min(days[dateStr].low, item.main.temp_min);
-    });
-
-    return Object.values(days).slice(0, 5);
 }
 
 function showError(message) {

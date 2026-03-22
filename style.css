@@ -118,9 +118,12 @@ h1 {
     margin-bottom: 20px;
 }
 
-#weather-icon {
-    width: 100px;
-    height: 100px;
+.weather-emoji-large {
+    font-size: 4rem;
+}
+
+.weather-emoji {
+    font-size: 2.5rem;
 }
 
 .temperature {
@@ -185,10 +188,6 @@ h1 {
     margin-bottom: 8px;
 }
 
-.forecast-card img {
-    width: 50px;
-    height: 50px;
-}
 
 .forecast-card .temp-range {
     font-size: 1rem;
