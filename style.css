@@ -205,6 +205,84 @@ h1 {
     font-weight: 500;
 }
 
+/* Home Screen */
+.home-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.home-datetime {
+    margin-bottom: 12px;
+}
+
+.home-date {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    margin-bottom: 4px;
+}
+
+.home-time {
+    font-size: 2.8rem;
+    font-weight: 200;
+    letter-spacing: 2px;
+}
+
+.home-greeting {
+    font-size: 1.2rem;
+    font-weight: 300;
+    opacity: 0.9;
+}
+
+.popular-cities {
+    margin-bottom: 20px;
+}
+
+.popular-cities h3 {
+    text-align: center;
+    font-weight: 400;
+    font-size: 1rem;
+    opacity: 0.8;
+    margin-bottom: 12px;
+}
+
+.popular-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.popular-btn {
+    padding: 12px 8px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    backdrop-filter: blur(10px);
+}
+
+.popular-btn:hover {
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateY(-2px);
+}
+
+.weather-tip {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-style: italic;
+    opacity: 0.85;
+    line-height: 1.5;
+}
+
 /* Hourly Forecast */
 .hourly-forecast h2 {
     text-align: center;
@@ -325,6 +403,14 @@ h1 {
 
     .forecast-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .popular-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .home-time {
+        font-size: 2rem;
     }
 
     .weather-details {

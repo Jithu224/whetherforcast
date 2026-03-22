@@ -25,6 +25,33 @@
         <div id="error-message" class="error hidden"></div>
         <div id="loading" class="loading hidden">Loading...</div>
 
+        <!-- Home Screen -->
+        <section id="home-screen" class="home-screen">
+            <div class="home-card">
+                <div class="home-datetime">
+                    <div id="home-date" class="home-date"></div>
+                    <div id="home-time" class="home-time"></div>
+                </div>
+                <p class="home-greeting" id="home-greeting"></p>
+            </div>
+
+            <div class="popular-cities">
+                <h3>Popular Cities</h3>
+                <div class="popular-grid">
+                    <button class="popular-btn" data-city="London">🇬🇧 London</button>
+                    <button class="popular-btn" data-city="New York">🇺🇸 New York</button>
+                    <button class="popular-btn" data-city="Tokyo">🇯🇵 Tokyo</button>
+                    <button class="popular-btn" data-city="Dubai">🇦🇪 Dubai</button>
+                    <button class="popular-btn" data-city="Paris">🇫🇷 Paris</button>
+                    <button class="popular-btn" data-city="Sydney">🇦🇺 Sydney</button>
+                    <button class="popular-btn" data-city="Mumbai">🇮🇳 Mumbai</button>
+                    <button class="popular-btn" data-city="Singapore">🇸🇬 Singapore</button>
+                </div>
+            </div>
+
+            <div class="weather-tip" id="weather-tip"></div>
+        </section>
+
         <section id="current-weather" class="current-weather hidden">
             <div class="weather-card">
                 <h2 id="city-name"></h2>

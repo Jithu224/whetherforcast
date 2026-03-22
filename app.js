@@ -44,6 +44,20 @@ const forecastSection = document.getElementById('forecast');
 const hourlySection = document.getElementById('hourly-forecast');
 const recentSection = document.getElementById('recent-searches');
 const recentList = document.getElementById('recent-list');
+const homeScreen = document.getElementById('home-screen');
+
+const WEATHER_TIPS = [
+    "Red sky at night, sailor's delight. Red sky in morning, sailor's warning.",
+    "When the dew is on the grass, rain will never come to pass.",
+    "A rainbow in the morning gives you fair warning of storms ahead.",
+    "Clear moon, frost soon. Ring around the moon means rain is coming.",
+    "When clouds appear like rocks and towers, the earth's refreshed by frequent showers.",
+    "If the sunset is mostly red, the next day will be fine and dry.",
+    "Wind from the west, weather's the best. Wind from the east, not fit for man or beast.",
+    "The higher the clouds, the better the weather ahead.",
+    "When stars begin to huddle, the earth will soon become a puddle.",
+    "If birds fly low, expect rain and a blow.",
+];
 
 // Event listeners
 searchBtn.addEventListener('click', searchCity);
@@ -53,8 +67,60 @@ cityInput.addEventListener('keydown', (e) => {
 locationBtn.addEventListener('click', useMyLocation);
 unitToggle.addEventListener('click', toggleUnit);
 
+// Popular city buttons
+document.querySelectorAll('.popular-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        cityInput.value = btn.dataset.city;
+        searchCity();
+    });
+});
+
 // Init
 loadRecentSearches();
+initHomeScreen();
+
+// --- Home Screen ---
+
+function initHomeScreen() {
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+    updateGreeting();
+    showRandomTip();
+}
+
+function updateDateTime() {
+    const now = new Date();
+    document.getElementById('home-date').textContent = now.toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+    document.getElementById('home-time').textContent = now.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+}
+
+function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting;
+    if (hour < 6) greeting = 'Good night! Check tomorrow\'s weather before bed.';
+    else if (hour < 12) greeting = 'Good morning! Here\'s your weather for today.';
+    else if (hour < 17) greeting = 'Good afternoon! Stay updated on the weather.';
+    else if (hour < 21) greeting = 'Good evening! Plan ahead with the forecast.';
+    else greeting = 'Good night! Check tomorrow\'s weather before bed.';
+    document.getElementById('home-greeting').textContent = greeting;
+}
+
+function showRandomTip() {
+    const tip = WEATHER_TIPS[Math.floor(Math.random() * WEATHER_TIPS.length)];
+    document.getElementById('weather-tip').textContent = `"${tip}"`;
+}
+
+function hideHomeScreen() {
+    homeScreen.classList.add('hidden');
+}
+
+function showHomeScreen() {
+    homeScreen.classList.remove('hidden');
+}
 
 // --- Temperature Unit Toggle ---
 
@@ -82,6 +148,7 @@ function useMyLocation() {
     }
     hideError();
     showLoading();
+    hideHomeScreen();
     currentWeatherSection.classList.add('hidden');
     forecastSection.classList.add('hidden');
     hourlySection.classList.add('hidden');
@@ -165,6 +232,7 @@ async function searchCity() {
 
     hideError();
     showLoading();
+    hideHomeScreen();
     currentWeatherSection.classList.add('hidden');
     forecastSection.classList.add('hidden');
     hourlySection.classList.add('hidden');
