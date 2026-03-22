@@ -29,7 +29,7 @@ h1 {
 .search-bar {
     display: flex;
     gap: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
 }
 
 #city-input {
@@ -53,8 +53,10 @@ h1 {
     background: rgba(255, 255, 255, 0.3);
 }
 
-#search-btn {
-    padding: 12px 24px;
+#search-btn,
+#location-btn,
+#unit-toggle {
+    padding: 12px 16px;
     border: none;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.25);
@@ -65,8 +67,50 @@ h1 {
     backdrop-filter: blur(10px);
 }
 
-#search-btn:hover {
+#search-btn:hover,
+#location-btn:hover,
+#unit-toggle:hover {
     background: rgba(255, 255, 255, 0.4);
+}
+
+#unit-toggle {
+    font-weight: 700;
+    min-width: 44px;
+}
+
+/* Recent Searches */
+.recent-searches {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.recent-label {
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.recent-list {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.recent-chip {
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    border: none;
+    color: #fff;
+}
+
+.recent-chip:hover {
+    background: rgba(255, 255, 255, 0.3);
 }
 
 /* Error & Loading */
@@ -161,7 +205,60 @@ h1 {
     font-weight: 500;
 }
 
-/* Forecast */
+/* Hourly Forecast */
+.hourly-forecast h2 {
+    text-align: center;
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.hourly-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    margin-bottom: 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+}
+
+.hourly-scroll::-webkit-scrollbar {
+    height: 6px;
+}
+
+.hourly-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+
+.hourly-card {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 12px 14px;
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 80px;
+}
+
+.hourly-card .hour {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-bottom: 6px;
+}
+
+.hourly-card .hourly-emoji {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.hourly-card .hourly-temp {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* 5-Day Forecast */
 .forecast h2 {
     text-align: center;
     font-weight: 400;
@@ -188,7 +285,6 @@ h1 {
     margin-bottom: 8px;
 }
 
-
 .forecast-card .temp-range {
     font-size: 1rem;
     margin: 4px 0;
@@ -209,6 +305,18 @@ h1 {
 @media (max-width: 600px) {
     h1 {
         font-size: 1.5rem;
+    }
+
+    .search-bar {
+        flex-wrap: wrap;
+    }
+
+    #city-input {
+        flex: 1 1 100%;
+    }
+
+    #search-btn {
+        flex: 1;
     }
 
     .temperature {

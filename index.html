@@ -13,6 +13,13 @@
         <div class="search-bar">
             <input type="text" id="city-input" placeholder="Enter city name..." autocomplete="off">
             <button id="search-btn">Search</button>
+            <button id="location-btn" title="Use my location">📍</button>
+            <button id="unit-toggle" title="Toggle °C / °F">°C</button>
+        </div>
+
+        <div id="recent-searches" class="recent-searches hidden">
+            <span class="recent-label">Recent:</span>
+            <div id="recent-list" class="recent-list"></div>
         </div>
 
         <div id="error-message" class="error hidden"></div>
@@ -43,6 +50,11 @@
                     </div>
                 </div>
             </div>
+        </section>
+
+        <section id="hourly-forecast" class="hourly-forecast hidden">
+            <h2>Next 24 Hours</h2>
+            <div id="hourly-scroll" class="hourly-scroll"></div>
         </section>
 
         <section id="forecast" class="forecast hidden">
